@@ -1,0 +1,49 @@
+name: Rock Paper Scissors
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+jobs:
+  RPS:
+    env:
+      IBODY: ${{ github.event.issue.body }}
+      CBODY: ${{ github.event.comment.body }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+      NUMBER: ${{ github.event.issue.number }}
+      
+    if: contains(github.event.issue.labels.*.name, 'RPS')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Rock Paper Scissors
+        run: |-
+          computerHand=$(echo "Rock Paper Scissors" | tr " " "\n" | shuf -n1)
+      
+          [[ -z "$CBODY" ]] && {
+            playerHand=$(tail -n 1 <<<"$IBODY")
+          } || {
+            playerHand=$(tail -n 1 <<<"$CBODY")
+          }
+
+          [[ "$playerHand" == "$computerHand" ]] && {
+            ret="It's a Draw."
+          } || [[ "$playerHand" == "Rock" ]] && {
+            [[ "$computerHand" == "Paper" ]] && ret="You Lost..."
+            [[ "$computerHand" == "Scissors" ]] && ret="You win!"
+            
+          } || [[ "$playerHand" == "Paper" ]] && {
+            [[ "$computerHand" == "Rock" ]] && ret="You win!"
+            [[ "$computerHand" == "Scissors" ]] && ret="You Lost..."
+            
+          } || [[ "$playerHand" == "Scissors" ]] && {
+            [[ "$computerHand" == "Rock" ]] && ret="You Lost..."
+            [[ "$computerHand" == "Paper" ]] && ret="You win!"
+          }
+          
+          gh issue comment "$NUMBER" --body "Computer choosed $computerHand. $ret"
+
+
+          

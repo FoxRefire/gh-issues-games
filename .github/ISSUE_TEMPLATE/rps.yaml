@@ -1,0 +1,16 @@
+name: Rock Paper Scissors
+description: Play Rock Paper Scissors Game!
+title: "[New Game]: Rock Paper Scissors"
+labels: ["RPS"]
+body:
+  - type: dropdown
+    id: hand
+    attributes:
+      label: hand
+      options:
+        - Rock
+        - Paper
+        - Scissors
+      default: 0
+    validations:
+      required: true
